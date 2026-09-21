@@ -4,7 +4,7 @@
 
 # Spinin
 
-**Your DJ controller, everywhere else.**
+**Expand the power of your controller.**
 
 Turn a Pioneer DDJ-FLX4 into a control surface for Windows — keyboard shortcuts, system
 actions and your own commands, with profiles that follow whichever app is in front.
