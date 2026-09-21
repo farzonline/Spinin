@@ -12,8 +12,11 @@
 #define AppURL      "https://github.com/farzonline/Spinin"
 #define AppExe      "Spinin.exe"
 
-; Read the version straight out of the built exe, so it can never disagree with the build.
-#define AppVersion  GetVersionNumbersString("dist\Spinin\Spinin.exe")
+; Written by Spinin.spec from branding.py during the PyInstaller build, so this can never
+; disagree with the version the app itself reports. Not read from the built exe's own file
+; version: GetVersionNumbersString() there is a padded four-part number (0.1.0.0), not the
+; three-part version used everywhere else.
+#define AppVersion  Trim(FileRead(FileOpen("VERSION.txt")))
 
 [Setup]
 AppId={{8E2F4A17-6B5C-4D93-9E1A-5C7B2D0F8A34}

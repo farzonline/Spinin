@@ -33,6 +33,11 @@ open("version_info.txt", "w", encoding="utf-8").write(f"""VSVersionInfo(
 )
 """)
 
+# installer.iss reads this rather than asking the built exe for its version: Inno Setup's
+# GetVersionNumbersString() returns the padded four-part FIXEDFILEINFO (0.1.0.0), not the
+# three-part version everywhere else in the app calls itself.
+open("VERSION.txt", "w", encoding="utf-8").write(version)
+
 a = Analysis(
     ["main_windows.py"],
     pathex=[],

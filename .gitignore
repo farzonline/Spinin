@@ -11,6 +11,7 @@ build/
 dist/
 # Generated from branding.py by Spinin.spec on every build.
 version_info.txt
+VERSION.txt
 
 # Spinin's own runtime files.
 # mappings.json is personal; share a profile with the export in the ⋯ menu instead.
