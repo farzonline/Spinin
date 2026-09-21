@@ -1,0 +1,389 @@
+#Pay Attention!!
+#Value knobs are knobs that rotating them will change a value depending on their position. Each knob holds two integer variables x and y between 0 to 127. # So value knobs final value is 128*x + y. In the midi message sent by value knobs you should read what is placed in the place of x and y.
+
+
+
+
+
+NOTE_0_16 
+    Pushed: 	[MIDI] Input: NOTE_0_16 (NOTE_0_16) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_16 (NOTE_0_16) | Value: 0 | Type: note_on
+
+NOTE_0_17
+    Pushed: 	[MIDI] Input: NOTE_0_17 (NOTE_0_17) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_17 (NOTE_0_17) | Value: 0 | Type: note_on
+
+NOTE_0_77 
+    Pushed: 	[MIDI] Input: NOTE_0_77 (NOTE_0_77) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_77 (NOTE_0_77) | Value: 0 | Type: note_on
+
+NOTE_0_81 
+    Pushed: 	[MIDI] Input: NOTE_0_81 (NOTE_0_81) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_81 (NOTE_0_81) | Value: 0 | Type: note_on
+
+NOTE_0_83 
+    Pushed: 	[MIDI] Input: NOTE_0_83 (NOTE_0_83) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_83 (NOTE_0_83) | Value: 0 | Type: note_on
+
+NOTE_0_88 
+    Pushed: 	[MIDI] Input: SYNC_L (NOTE_0_88) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: SYNC_L (NOTE_0_88) | Value: 0 | Type: note_on
+
+NOTE_6_70 
+    Pushed: 	[MIDI] Input: NOTE_6_70 (NOTE_6_70) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_6_70 (NOTE_6_70) | Value: 0 | Type: note_on
+
+NOTE_6_65 
+    Pushed: 	[MIDI] Input: NOTE_6_65  (NOTE_6_65) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_6_65  (NOTE_6_65) | Value: 0 | Type: note_on
+
+CC_6_64
+	Clockwise: [MIDI] Input: CC_6_64 (CC_6_64) | Value: 1 | Type: control_change
+	Counter-Clockwise: [MIDI] Input: CC_6_64 (CC_6_64) | Value: 127 | Type: control_change
+
+NOTE_6_71 
+    Pushed: 	[MIDI] Input: NOTE_6_71 (NOTE_6_71) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_6_71 (NOTE_6_71) | Value: 0 | Type: note_on
+
+CC_6_8
+CC_6_40
+	Value knob: 
+		[MIDI] Input: CC_6_8 (CC_6_8) | Value: x | Type: control_change
+		[MIDI] Input: CC_6_40 (CC_6_40) | Value: y | Type: control_change
+
+NOTE_1_16 
+    Pushed: 	[MIDI] Input: NOTE_1_16 (NOTE_1_16) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_16 (NOTE_1_16) | Value: 0 | Type: note_on
+
+NOTE_1_17 
+    Pushed: 	[MIDI] Input: NOTE_1_17 (NOTE_1_17) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_17 (NOTE_1_17) | Value: 0 | Type: note_on
+
+NOTE_1_77
+    Pushed:	[MIDI] Input: NOTE_1_77 (NOTE_1_77) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_77 (NOTE_1_77) | Value: 0 | Type: note_on
+
+NOTE_1_81
+    Pushed:	[MIDI] Input: NOTE_1_81 (NOTE_1_81) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_81 (NOTE_1_81) | Value: 0 | Type: note_on
+
+NOTE_1_83
+    Pushed:	[MIDI] Input: NOTE_1_83 (NOTE_1_83) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_83 (NOTE_1_83) | Value: 0 | Type: note_on
+
+NOTE_1_88
+    Pushed:	[MIDI] Input: SYNC_R (NOTE_1_88) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: SYNC_R (NOTE_1_88) | Value: 0 | Type: note_on
+
+CC_0_4
+CC_0_36
+	Value knob: 
+		[MIDI] Input: CC_0_4 (CC_0_4) | Value: x | Type: control_change
+		[MIDI] Input: CC_0_36 (CC_0_36) | Value: y | Type: control_change
+CC_1_4
+CC_1_36
+	Value knob: 
+		[MIDI] Input: CC_1_4 (CC_1_4) | Value: x | Type: control_change
+		[MIDI] Input: CC_1_36 (CC_1_36) | Value: y | Type: control_change
+CC_0_7
+CC_0_39
+	Value knob: 
+		[MIDI] Input: KNOB_TRIM_L (CC_0_7) | Value: x | Type: control_change
+		[MIDI] Input: CC_0_39 (CC_0_39) | Value: y | Type: control_change
+
+CC_1_7
+CC_1_39
+	Value knob: 
+		[MIDI] Input: KNOB_TRIM_R (CC_1_7) | Value: x | Type: control_change
+		[MIDI] Input: CC_1_39 (CC_1_39) | Value: y | Type: control_change
+NOTE_6_99
+    Pushed:	[MIDI] Input: NOTE_6_99 (NOTE_6_99) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_6_99 (NOTE_6_99) | Value: 0 | Type: note_on
+
+CC_6_5
+CC_6_37
+	Value knob: 
+		[MIDI] Input: CC_6_5 (CC_6_5) | Value: x | Type: control_change
+		[MIDI] Input: CC_6_37 (CC_6_37) | Value: y | Type: control_change
+
+CC_0_11
+CC_0_43
+	Value knob: 
+		[MIDI] Input: KNOB_FILTER_L (CC_0_11) | Value: x | Type: control_change
+		[MIDI] Input: CC_0_43 (CC_0_43) | Value: y | Type: control_change
+
+CC_1_11
+CC_1_43
+	Value knob: 
+		[MIDI] Input: KNOB_FILTER_R (CC_1_11) | Value: x | Type: control_change
+		[MIDI] Input: CC_1_43 (CC_1_43) | Value: y | Type: control_change
+
+CC_0_15
+CC_0_47
+	Value knob: 
+		[MIDI] Input: CC_0_15 (CC_0_15) | Value: x | Type: control_change
+		[MIDI] Input: CC_0_47 (CC_0_47) | Value: y | Type: control_change
+
+CC_1_15
+CC_1_47
+	Value knob: 
+		[MIDI] Input: CC_1_15 (CC_1_15) | Value: x | Type: control_change
+		[MIDI] Input: CC_1_47 (CC_1_47) | Value: y | Type: control_change
+
+CC_6_23
+CC_6_55
+	Value knob: 
+		[MIDI] Input: CC_6_23 (CC_6_23) | Value: x | Type: control_change
+		[MIDI] Input: CC_6_55 (CC_6_55) | Value: y | Type: control_change
+CC_6_24
+CC_6_56
+	Value knob: 
+		[MIDI] Input: CC_6_24 (CC_6_24) | Value: x | Type: control_change
+		[MIDI] Input: CC_6_56 (CC_6_56) | Value: y | Type: control_change
+CC_6_12
+CC_6_44
+	Value knob: 
+		[MIDI] Input: CC_6_12 (CC_6_12) | Value: x | Type: control_change
+		[MIDI] Input: CC_6_44 (CC_6_44) | Value: y | Type: control_change
+CC_6_13
+CC_6_45
+	Value knob: 
+		[MIDI] Input: CC_6_13 (CC_6_13) | Value: x | Type: control_change
+		[MIDI] Input: CC_6_45 (CC_6_45) | Value: y | Type: control_change
+
+CC_4_2
+CC_4_34
+	Value knob: 
+		[MIDI] Input: CC_4_2 (CC_4_2) | Value: x | Type: control_change
+		[MIDI] Input: CC_4_34 (CC_4_34) | Value: y | Type: control_change
+NOTE_4_99
+    Pushed:	[MIDI] Input: NOTE_4_99 (NOTE_4_99) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_4_99 (NOTE_4_99) | Value: 0 | Type: note_on
+
+NOTE_4_75
+    Pushed:	[MIDI] Input: NOTE_4_75 (NOTE_4_75) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_4_75 (NOTE_4_75) | Value: 0 | Type: note_on
+
+NOTE_1_63
+    Pushed:	[MIDI] Input: NOTE_1_63 (NOTE_1_63) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_63 (NOTE_1_63) | Value: 0 | Type: note_on
+
+NOTE_4_74
+    Pushed:	[MIDI] Input: NOTE_4_74 (NOTE_4_74) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_4_74 (NOTE_4_74) | Value: 0 | Type: note_on
+
+NOTE_6_0
+    Pushed:	[MIDI] Input: NOTE_6_0 (NOTE_6_0) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_6_0 (NOTE_6_0) | Value: 0 | Type: note_on
+
+NOTE_0_84
+    Pushed:	[MIDI] Input: NOTE_0_84 (NOTE_0_84) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_84 (NOTE_0_84) | Value: 0 | Type: note_on
+
+NOTE_1_84
+    Pushed:	[MIDI] Input: NOTE_1_84 (NOTE_1_84) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_84 (NOTE_1_84) | Value: 0 | Type: note_on
+
+NOTE_1_27
+    Pushed:	[MIDI] Input: NOTE_1_27 (NOTE_1_27) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_27 (NOTE_1_27) | Value: 0 | Type: note_on
+
+NOTE_1_30
+    Pushed:	[MIDI] Input: NOTE_1_30 (NOTE_1_30) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_30 (NOTE_1_30) | Value: 0 | Type: note_on
+
+NOTE_1_32
+    Pushed:	[MIDI] Input: NOTE_1_32 (NOTE_1_32) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_32 (NOTE_1_32) | Value: 0 | Type: note_on
+
+NOTE_1_34
+    Pushed:	[MIDI] Input: NOTE_1_34 (NOTE_1_34) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_1_34 (NOTE_1_34) | Value: 0 | Type: note_on
+
+NOTE_9_48
+    Pushed:	[MIDI] Input: NOTE_9_48 (NOTE_9_48) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_48 (NOTE_9_48) | Value: 0 | Type: note_on
+
+NOTE_9_49
+    Pushed:	[MIDI] Input: NOTE_9_49 (NOTE_9_49) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_49 (NOTE_9_49) | Value: 0 | Type: note_on
+
+NOTE_9_50
+    Pushed:	[MIDI] Input: NOTE_9_50 (NOTE_9_50) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_50 (NOTE_9_50) | Value: 0 | Type: note_on
+
+NOTE_9_51
+    Pushed:	[MIDI] Input: NOTE_9_51 (NOTE_9_51) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_51 (NOTE_9_51) | Value: 0 | Type: note_on
+
+NOTE_9_52
+    Pushed:	[MIDI] Input: NOTE_9_52 (NOTE_9_52) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_52 (NOTE_9_52) | Value: 0 | Type: note_on
+
+NOTE_9_53
+    Pushed:	[MIDI] Input: NOTE_9_53 (NOTE_9_53) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_53 (NOTE_9_53) | Value: 0 | Type: note_on
+
+NOTE_9_54
+    Pushed:	[MIDI] Input: NOTE_9_54 (NOTE_9_54) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_54 (NOTE_9_54) | Value: 0 | Type: note_on
+
+NOTE_9_55
+    Pushed:	[MIDI] Input: NOTE_9_55 (NOTE_9_55) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_9_55 (NOTE_9_55) | Value: 0 | Type: note_on
+
+NOTE_7_48
+    Pushed:	[MIDI] Input: NOTE_7_48 (NOTE_7_48) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_48 (NOTE_7_48) | Value: 0 | Type: note_on
+
+NOTE_7_49
+    Pushed:	[MIDI] Input: NOTE_7_49 (NOTE_7_49) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_49 (NOTE_7_49) | Value: 0 | Type: note_on
+
+NOTE_7_50
+    Pushed:	[MIDI] Input: NOTE_7_50 (NOTE_7_50) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_50 (NOTE_7_50) | Value: 0 | Type: note_on
+
+NOTE_7_51
+    Pushed:	[MIDI] Input: NOTE_7_51 (NOTE_7_51) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_51 (NOTE_7_51) | Value: 0 | Type: note_on
+
+NOTE_7_52
+    Pushed:	[MIDI] Input: NOTE_7_52 (NOTE_7_52) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_52 (NOTE_7_52) | Value: 0 | Type: note_on
+
+NOTE_7_53
+    Pushed:	[MIDI] Input: NOTE_7_53 (NOTE_7_53) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_53 (NOTE_7_53) | Value: 0 | Type: note_on
+
+NOTE_7_54
+    Pushed:	[MIDI] Input: NOTE_7_54 (NOTE_7_54) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_54 (NOTE_7_54) | Value: 0 | Type: note_on
+
+NOTE_7_55
+    Pushed:	[MIDI] Input: NOTE_7_55 (NOTE_7_55) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_7_55 (NOTE_7_55) | Value: 0 | Type: note_on
+
+NOTE_6_1
+    Pushed:	[MIDI] Input: NOTE_6_1 (NOTE_6_1) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_6_1 (NOTE_6_1) | Value: 0 | Type: note_on
+
+NOTE_4_71
+    Pushed:	[MIDI] Input: NOTE_4_71 (NOTE_4_71) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_4_71 (NOTE_4_71) | Value: 0 | Type: note_on
+
+NOTE_1_12
+    Pushed:	[MIDI] Input: CUE_R (NOTE_1_12) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: CUE_R (NOTE_1_12) | Value: 0 | Type: note_on
+
+NOTE_1_11
+    Pushed:	[MIDI] Input: PLAY_R (NOTE_1_11) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: PLAY_R (NOTE_1_11) | Value: 0 | Type: note_on
+
+NOTE_0_11
+    Pushed:	[MIDI] Input: PLAY_L (NOTE_0_11) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: PLAY_L (NOTE_0_11) | Value: 0 | Type: note_on
+
+NOTE_0_12
+    Pushed:	[MIDI] Input: CUE_L (NOTE_0_12) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: CUE_L (NOTE_0_12) | Value: 0 | Type: note_on
+
+NOTE_0_27
+    Pushed:	[MIDI] Input: NOTE_0_27 (NOTE_0_27) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_27 (NOTE_0_27) | Value: 0 | Type: note_on
+
+NOTE_0_30
+    Pushed:	[MIDI] Input: NOTE_0_30 (NOTE_0_30) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_30 (NOTE_0_30) | Value: 0 | Type: note_on
+
+NOTE_0_32
+    Pushed:	[MIDI] Input: NOTE_0_32 (NOTE_0_32) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_32 (NOTE_0_32) | Value: 0 | Type: note_on
+
+NOTE_0_34
+    Pushed:	[MIDI] Input: NOTE_0_34 (NOTE_0_34) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_34 (NOTE_0_34) | Value: 0 | Type: note_on
+
+NOTE_0_63
+    Pushed:	[MIDI] Input: NOTE_0_63 (NOTE_0_63) | Value: 127 | Type: note_on
+    Released:	[MIDI] Input: NOTE_0_63 (NOTE_0_63) | Value: 0 | Type: note_on
+
+CC_1_0
+CC_1_32
+	Value knob: 
+		[MIDI] Input: TEMPO_R (CC_1_0) | Value: x | Type: control_change
+		[MIDI] Input: CC_1_32 (CC_1_32) | Value: y | Type: control_change
+
+CC_0_0
+CC_0_32
+	Value knob: 
+		[MIDI] Input: TEMPO_L (CC_0_0) | Value: x | Type: control_change
+		[MIDI] Input: CC_0_32 (CC_0_32) | Value: y | Type: control_change
+
+CC_6_31
+CC_6_63
+	Value knob: 
+		[MIDI] Input: CC_6_31 (CC_6_31) | Value: x | Type: control_change
+		[MIDI] Input: CC_6_63 (CC_6_63) | Value: y | Type: control_change
+
+CC_0_19
+CC_0_51
+	Value knob: 
+		[MIDI] Input: FADER_L (CC_0_19) | Value: x | Type: control_change
+		[MIDI] Input: CC_0_51 (CC_0_51) | Value: y | Type: control_change
+
+CC_1_19
+CC_1_51
+	Value knob: 
+		[MIDI] Input: FADER_R (CC_1_19) | Value: x | Type: control_change
+		[MIDI] Input: CC_0_51 (CC_1_51) | Value: y | Type: control_change
+
+Right Disk:
+	Touch:
+		[MIDI] Input: NOTE_1_54 (NOTE_1_54) | Value: 127 | Type: note_on
+	Release Touch:
+		[MIDI] Input: NOTE_1_54 (NOTE_1_54) | Value: 0 | Type: note_on
+	
+	Rotation Clockwise without touch:	
+		[MIDI] Input: CC_1_33 (CC_1_33) | Value: 65 | Type: control_change
+	Rotation Counter-Clockwise without touch:
+		[MIDI] Input: CC_1_33 (CC_1_33) | Value: 63 | Type: control_change
+
+	Rotation Clockwise with touch:
+		[MIDI] Input: CC_1_34 (CC_1_34) | Value: 65 | Type: control_change
+	Rotation Counter-Clockwise with touch:
+		[MIDI] Input: CC_1_34 (CC_1_34) | Value: 63 | Type: control_change
+
+Left Disk:
+	Touch:
+		[MIDI] Input: NOTE_0_54 (NOTE_0_54) | Value: 127 | Type: note_on
+	Release Touch:
+		[MIDI] Input: NOTE_0_54 (NOTE_0_54) | Value: 0 | Type: note_on
+	
+	Rotation Clockwise without touch:	
+		[MIDI] Input: CC_0_33 (CC_0_33) | Value: 65 | Type: control_change
+	Rotation Counter-Clockwise without touch:
+		[MIDI] Input: CC_0_33 (CC_0_33) | Value: 63 | Type: control_change
+
+	Rotation Clockwise with touch:
+		[MIDI] Input: CC_0_34 (CC_0_34) | Value: 65 | Type: control_change
+	Rotation Counter-Clockwise with touch:
+		[MIDI] Input: CC_0_34 (CC_0_34) | Value: 63 | Type: control_change
+
+Multi-option slider: This slider has three options: 1, 2, 1&2
+When it changes to option "1" we will get:
+	[MIDI] Input: NOTE_4_17 (NOTE_4_17) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_5_16 (NOTE_5_16) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_5_17 (NOTE_5_17) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_4_16 (NOTE_4_16) | Value: 127 | Type: note_on
+When it changes to option "2" we will get:
+	[MIDI] Input: NOTE_4_16 (NOTE_4_16) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_4_17 (NOTE_4_17) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_5_16 (NOTE_5_16) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_5_17 (NOTE_5_17) | Value: 127 | Type: note_on
+When it changes to option "1&2" we will get:
+	[MIDI] Input: NOTE_4_17 (NOTE_4_17) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_5_16 (NOTE_5_16) | Value: 0 | Type: note_on
+	[MIDI] Input: NOTE_4_16 (NOTE_4_16) | Value: 127 | Type: note_on
+	[MIDI] Input: NOTE_5_17 (NOTE_5_17) | Value: 127 | Type: note_on
+

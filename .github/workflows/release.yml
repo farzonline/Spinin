@@ -1,0 +1,64 @@
+name: Build release
+
+# Tag a commit v0.1.0 and push it, and the exe and installer are built and attached
+# to a draft release. Also runnable by hand from the Actions tab.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run the self-checks
+        # Every module tests itself when run directly; a failure here stops the release.
+        run: |
+          foreach ($m in @("branding", "actions", "action_handler", "theme", "controls",
+                           "config_manager", "midi_listener", "profile_io", "app_scanner",
+                           "dj_guard")) {
+            Write-Host "--- $m"
+            python "$m.py"
+            if ($LASTEXITCODE -ne 0) { throw "$m self-check failed" }
+          }
+
+      - name: Build the executable
+        run: pyinstaller --noconfirm Spinin.spec
+
+      - name: Build the installer
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed" }
+
+      - name: Package the portable build
+        run: Compress-Archive -Path dist\Spinin\* -DestinationPath dist\Spinin-portable.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Spinin-windows
+          path: |
+            dist/installer/*.exe
+            dist/Spinin-portable.zip
+
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          files: |
+            dist/installer/*.exe
+            dist/Spinin-portable.zip
