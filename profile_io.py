@@ -58,8 +58,8 @@ def _clean_mapping(mapping):
     if isinstance(options, dict):
         kept = {}
         for key in action["options"]:
-            if key == "invert" and options.get("invert"):
-                kept["invert"] = True
+            if key in ("invert", "smooth") and options.get(key):
+                kept[key] = True
             elif key in ("sensitivity", "acceleration") and isinstance(options.get(key), int):
                 kept[key] = max(0, min(30, options[key]))
         if kept:
@@ -140,11 +140,13 @@ if __name__ == "__main__":
     assert not problems, problems
     assert risky_entries(loaded) == ["VLC: calc.exe"], risky_entries(loaded)
 
-    # Anything unknown or malformed is dropped rather than trusted.
+    # Anything unknown or malformed is dropped rather than trusted. The surviving action has
+    # to exist in both catalogs, since this runs on macOS too: "win.start" would be dropped
+    # there as unknown, correctly, and the check would fail for the wrong reason.
     nasty = {FORMAT_KEY: 1, "profiles": {
         "ok.exe": {"name": "Fine", "mappings": {
             "PAD_L_1": {"type": "action", "id": "no.such.action"},
-            "PAD_L_2": {"type": "action", "id": "win.start", "options": {"sensitivity": 9999},
+            "PAD_L_2": {"type": "action", "id": "win.lock", "options": {"sensitivity": 9999},
                         "surprise": "ignored"},
             "PAD_L_3": "not even a mapping"}},
         "../../evil": {"name": "Escape", "mappings": {}},
@@ -155,9 +157,19 @@ if __name__ == "__main__":
     assert "../../evil" not in loaded and "ok.exe" in loaded
     assert list(loaded["ok.exe"]["mappings"]) == ["PAD_L_2"], loaded["ok.exe"]["mappings"]
     assert "surprise" not in loaded["ok.exe"]["mappings"]["PAD_L_2"]
-    assert "options" not in loaded["ok.exe"]["mappings"]["PAD_L_2"], "win.start takes no options"
+    assert "options" not in loaded["ok.exe"]["mappings"]["PAD_L_2"], "win.lock takes no options"
     assert len(loaded["big.exe"]["name"]) == 60
     assert any("left out" in p for p in problems), problems
+
+    # Every option a mapping can carry must survive a round trip, or sharing a profile
+    # quietly loses settings. smooth was missed once already.
+    jog = {"type": "action", "id": "turn.scroll",
+           "options": {"invert": True, "smooth": True, "sensitivity": 3, "acceleration": 4}}
+    write_file(path, {"t.exe": {"name": "T", "mappings": {"JOG_ROTATE_L": jog}}})
+    kept = read_file(path)[0]["t.exe"]["mappings"]["JOG_ROTATE_L"]["options"]
+    assert kept == jog["options"], kept
+    offered = {o for a in catalog.ACTIONS for o in a["options"]}
+    assert offered <= set(jog["options"]), f"an option the importer does not know: {offered}"
 
     with open(path, "w", encoding="utf-8") as f:
         f.write("this is not json")
