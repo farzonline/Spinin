@@ -17,11 +17,14 @@ from theme import T
 
 IS_MAC = sys.platform == "darwin"
 
-if not IS_MAC:
-    import ctypes
-    from ctypes import wintypes
+# ctypes itself is fine everywhere, and the structures below are built from it at import
+# time, so only the Windows type names are held back. Nulling ctypes out on macOS once
+# made this module fail to import there, which took the whole app down at launch.
+import ctypes  # noqa: E402
+if IS_MAC:
+    wintypes = None
 else:
-    ctypes = wintypes = None
+    from ctypes import wintypes
 
 # Windows 11 ships Segoe Fluent Icons; Windows 10 has the same glyphs in Segoe MDL2 Assets.
 ICON_FONTS = ("Segoe Fluent Icons", "Segoe MDL2 Assets")
