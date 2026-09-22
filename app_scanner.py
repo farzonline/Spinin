@@ -67,16 +67,24 @@ def installed(refresh=False):
 if __name__ == "__main__":
     import tempfile
 
+    # scan() means something different per platform, so the fixture has to match: Start Menu
+    # shortcuts on Windows, .app bundles on macOS.
     with tempfile.TemporaryDirectory() as tmp:
-        os.makedirs(os.path.join(tmp, "Games"))
-        for rel in ("Notepad.lnk", "Games/Solitaire.lnk", "Uninstall Thing.lnk",
-                    "Thing Readme.lnk", "Notes.txt", "Site.url"):
-            open(os.path.join(tmp, rel), "w").close()
+        if IS_MAC:
+            for entry in ("Safari.app", "Mail.app", "Screen Sharing.app", "notes.txt"):
+                os.makedirs(os.path.join(tmp, entry), exist_ok=True)
+            expected, suffix = ["Mail", "Safari"], "Mail.app"
+        else:
+            os.makedirs(os.path.join(tmp, "Games"))
+            for rel in ("Notepad.lnk", "Games/Solitaire.lnk", "Uninstall Thing.lnk",
+                        "Thing Readme.lnk", "Notes.txt", "Site.url"):
+                open(os.path.join(tmp, rel), "w").close()
+            expected, suffix = ["Notepad", "Site", "Solitaire"], "Notepad.lnk"
         names = [n for n, _ in scan([tmp])]
-        assert names == ["Notepad", "Site", "Solitaire"], names
-        assert scan([tmp])[0][1].endswith("Notepad.lnk")
+        assert names == expected, names
+        assert scan([tmp])[0][1].endswith(suffix)
         assert scan([tmp, tmp]) == scan([tmp]), "the same folder twice must not duplicate"
-    assert scan(["X:/does/not/exist"]) == []
+    assert scan([os.path.join(tempfile.gettempdir(), "spinin-no-such-folder")]) == []
 
     real = installed()
     assert real is installed(), "second call must come from the cache"
