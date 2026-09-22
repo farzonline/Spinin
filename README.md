@@ -121,6 +121,18 @@ Uninstalling leaves your settings alone, so reinstalling does not lose your work
 - A Pioneer DDJ-FLX4
 - To run from source: Python 3.11+
 
+## macOS
+
+**Not ready yet.** There is a macOS port in the tree — the platform split is done, the
+Quartz and CoreAudio backends are written, there is a 138-action Mac catalog, and CI builds
+a `.app` on every push. But **it has never been run on a Mac**, so nothing about it is
+proven beyond "it imports and the window constructs".
+
+There is no macOS download, and there won't be one until it has been tested on real
+hardware. If you have a Mac and a DDJ-FLX4 and fancy being the first person to try it, the
+checklist and the known-shaky parts are in **[docs/MACOS.md](docs/MACOS.md)** — issues and
+pull requests very welcome.
+
 ## Building a release
 
 ```bash

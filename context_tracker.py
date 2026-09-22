@@ -1,10 +1,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # context_tracker.py
 import os
-import win32gui
-import win32process
+import sys
+
 import psutil
 from PyQt6.QtCore import QObject, pyqtSignal, QTimer
+
+IS_MAC = sys.platform == "darwin"
+
+if not IS_MAC:
+    import win32gui
+    import win32process
 
 class ActiveWindowTracker(QObject):
     # Signals active process change (e.g. "photoshop.exe", "vlc.exe", or "global")
@@ -27,7 +33,16 @@ class ActiveWindowTracker(QObject):
         self.timer.stop()
 
     def get_active_process_info(self):
-        """Returns (process_name, window_title) for the current active foreground window."""
+        """Returns (identifier, window_title) for the app in front.
+
+        The identifier is what a profile is keyed on: a process name on Windows
+        ("photoshop.exe"), a bundle id on macOS ("com.adobe.Photoshop"). Returns None for
+        our own window, so editing a mapping does not switch the profile under you.
+        """
+        if IS_MAC:
+            from macos_system import frontmost_app, own_identifier
+            identifier, title = frontmost_app()
+            return (None, title) if identifier == own_identifier() else (identifier, title)
         hwnd = win32gui.GetForegroundWindow()
         if not hwnd:
             return "global", "No Active Window"

@@ -8,12 +8,24 @@ import subprocess
 import threading
 import time
 
-from AppOpener import open as open_app
-from pycaw.pycaw import AudioUtilities
-
 import actions as catalog
 import audio_devices
-import winput
+import userinput
+
+IS_MAC = sys.platform == "darwin"
+
+if IS_MAC:
+    import macos_system
+    AudioUtilities = None
+    open_app = None
+    # macOS reads Ctrl+scroll as the accessibility screen zoom, so an app's own zoom is
+    # Cmd+scroll there. Windows uses Ctrl for both.
+    ZOOM_MODIFIER = "cmd"
+else:
+    from AppOpener import open as open_app
+    from pycaw.pycaw import AudioUtilities
+    macos_system = None
+    ZOOM_MODIFIER = "ctrl"
 
 OWN_PROCESS = os.path.basename(sys.executable).lower()
 
@@ -39,6 +51,13 @@ LEGACY_SYSTEM = {
 
 
 def foreground_pid():
+    if IS_MAC:
+        try:
+            from AppKit import NSWorkspace
+            app = NSWorkspace.sharedWorkspace().frontmostApplication()
+            return app.processIdentifier() if app else None
+        except Exception:
+            return None
     import win32gui
     import win32process
     hwnd = win32gui.GetForegroundWindow()
@@ -49,7 +68,7 @@ def foreground_pid():
 
 
 def foreground_name():
-    """Process name of the window that will receive a keystroke, for the Activity log."""
+    """Name of the app that will receive a keystroke, for the Activity log."""
     try:
         import psutil
         pid = foreground_pid()
@@ -73,7 +92,13 @@ class ActionHandler:
         self.init_audio()
 
     def init_audio(self):
-        """Initialises the pycaw audio endpoint for system volume control."""
+        """Initialises the audio endpoint for system volume control.
+
+        macOS talks to CoreAudio on each call instead of holding an endpoint, so there is
+        nothing to set up there.
+        """
+        if IS_MAC:
+            return
         try:
             device = AudioUtilities.GetSpeakers()
             if hasattr(device, "EndpointVolume"):  # pycaw >= 20240316
@@ -159,10 +184,10 @@ class ActionHandler:
         if not keys:
             return False
         target = foreground_name()
-        ok = winput.tap(keys)
+        ok = userinput.tap(keys)
         combo = " + ".join(k.upper() for k in keys)
         if not ok:
-            self.report(f"{combo} was not sent. {winput.last_error}")
+            self.report(f"{combo} was not sent. {userinput.last_error()}")
         elif target == OWN_PROCESS:
             self.report(f"Sent {combo}, but Spinin itself was in front, so it went nowhere. "
                         "Click the app you want it in first.")
@@ -176,13 +201,14 @@ class ActionHandler:
 
     @staticmethod
     def scroll(dx=0, dy=0, with_ctrl=False):
+        """Scrolls, optionally holding the modifier that means "zoom" on this platform."""
         if not with_ctrl:
-            return winput.scroll(dx, dy)
-        winput.key_down("ctrl")  # Ctrl + wheel is how apps zoom
+            return userinput.scroll(dx, dy)
+        userinput.key_down(ZOOM_MODIFIER)
         try:
-            return winput.scroll(dx, dy)
+            return userinput.scroll(dx, dy)
         finally:
-            winput.key_up("ctrl")
+            userinput.key_up(ZOOM_MODIFIER)
 
     @staticmethod
     def _background(fn, *args):
@@ -193,7 +219,9 @@ class ActionHandler:
     def launch_uri(self, uri):
         def run():
             try:
-                if uri.startswith("shell:"):
+                if IS_MAC:
+                    macos_system.open_uri(uri)
+                elif uri.startswith("shell:"):
                     subprocess.Popen(["explorer.exe", uri])
                 else:
                     os.startfile(uri)
@@ -218,7 +246,10 @@ class ActionHandler:
 
         def run():
             try:
-                if os.path.exists(name):
+                if IS_MAC:
+                    # `open` handles both a path to an .app bundle and a plain app name.
+                    macos_system.launch(name)
+                elif os.path.exists(name):
                     # Covers the Start Menu shortcuts the app list offers: opening the .lnk
                     # keeps the working directory and arguments the installer put in it,
                     # which resolving it down to the bare .exe would throw away.
@@ -232,9 +263,13 @@ class ActionHandler:
         return self._background(run)
 
     def sleep_pc(self):
+        if IS_MAC:
+            return macos_system.sleep_now()
         return bool(ctypes.windll.powrprof.SetSuspendState(0, 1, 0))
 
     def lock_pc(self):
+        if IS_MAC:
+            return macos_system.lock_screen()
         # Windows ignores a synthetic Win+L (SendInput can't touch the secure desktop) -
         # LockWorkStation() is the actual API third-party code has to call.
         return bool(ctypes.windll.user32.LockWorkStation())
@@ -408,6 +443,12 @@ class ActionHandler:
         return False
 
     def set_volume(self, level):
+        if IS_MAC:
+            # Coming back up from silence should also lift a mute, however it was set.
+            if level > 0 and self._last_level <= 0 and macos_system.get_muted():
+                macos_system.set_muted(False)
+            self._last_level = level
+            return macos_system.set_volume(level)
         for attempt in (1, 2):
             if not self.volume_interface:
                 return False

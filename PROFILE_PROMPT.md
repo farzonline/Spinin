@@ -1,12 +1,12 @@
-# Prompt: make an FLX4 Mapper profile for any app
+# Prompt: make a Spinin profile for any app
 
 Paste everything below into an AI chat, replacing APP NAME with the program you want
 (for example Photoshop, DaVinci Resolve, Ableton Live, Excel). Save the reply as a `.json`
-file, then load it with **⋯ → Import profiles…** in FLX4 Mapper.
+file, then load it with **⋯ → Import profiles…** in Spinin.
 
 ---
 
-You are writing a profile file for FLX4 Mapper, a Windows app that turns a Pioneer DDJ-FLX4
+You are writing a profile file for Spinin, a Windows app that turns a Pioneer DDJ-FLX4
 DJ controller into a control surface for ordinary software. Produce a profile for: **APP NAME**
 
 Return **only** a JSON file, no explanation around it.
@@ -14,7 +14,7 @@ Return **only** a JSON file, no explanation around it.
 ## What a profile does
 
 Each control on the DJ controller is given one action. When the app named in the profile id is
-the active window, FLX4 Mapper uses that profile.
+the active window, Spinin uses that profile.
 
 ## File format
 
@@ -260,7 +260,6 @@ Each deck has 8 pads: `PAD_L_1`-`PAD_L_8` on deck 1, `PAD_R_1`-`PAD_R_8` on deck
 - `pow.restart` — Restart (shutdown /r /t 0)
 - `pow.shutdown` — Shut down (shutdown /s /t 0)
 - `pow.signout` — Sign out (shutdown /l)
-- `pow.lock` — Lock the PC (Win+L)
 
 **PowerToys**
 

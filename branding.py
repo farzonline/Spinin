@@ -28,13 +28,16 @@ def resource(*parts):
 def data_dir():
     """Where settings are written.
 
-    Beside the source when run from a checkout, so a clone stays self-contained; in %APPDATA%
-    once installed, because Program Files is read-only for the user running the app.
+    Beside the source when run from a checkout, so a clone stays self-contained. Once
+    installed it goes where the platform keeps such things, because an installed app cannot
+    write next to itself: %APPDATA% on Windows, ~/Library/Application Support on macOS.
     """
-    if FROZEN:
-        base = os.path.join(os.environ.get("APPDATA") or os.path.expanduser("~"), APP_NAME)
-    else:
+    if not FROZEN:
         base = os.path.dirname(os.path.abspath(__file__))
+    elif sys.platform == "darwin":
+        base = os.path.join(os.path.expanduser("~/Library/Application Support"), APP_NAME)
+    else:
+        base = os.path.join(os.environ.get("APPDATA") or os.path.expanduser("~"), APP_NAME)
     os.makedirs(base, exist_ok=True)
     return base
 

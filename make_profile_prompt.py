@@ -11,7 +11,7 @@ import re
 from collections import defaultdict
 
 import actions as catalog
-import winput
+import userinput
 from controls import (CONTROLS, CONTROL_NAMES, CONTROL_TO_MIDI, RELATIVE_CONTROLS,
                       ALL_PAD_IDS, PAD_MODES)
 
@@ -72,9 +72,9 @@ def action_table(kind):
 def key_names():
     """The named keys, minus the modifiers and f-keys already described in the sentence."""
     modifiers = {"ctrl", "alt", "shift", "win", "rctrl", "ralt", "rshift"}
-    specials = sorted(k for k in winput.VK
+    specials = sorted(k for k in userinput.KEYS
                       if len(k) > 1 and k not in modifiers and not re.fullmatch(r"f\d+", k))
-    punctuation = sorted(k for k in winput.VK if len(k) == 1 and not k.isalnum())
+    punctuation = sorted(k for k in userinput.KEYS if len(k) == 1 and not k.isalnum())
     return ("a-z, 0-9", "f1-f24",
             ", ".join(f"`{s}`" for s in specials + punctuation))
 

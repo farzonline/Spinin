@@ -1,19 +1,27 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# win_chrome.py
-# The bits of polish that are specific to Windows and to how the app is drawn:
-# proper tick marks, menu icons, and the frosted background behind menus.
+# chrome.py
+# The bits of polish around how the app is drawn: proper tick marks, menu icons, and the
+# frosted background behind menus.
 #
-# Everything here degrades quietly. If a Windows call is missing or refused the app still
-# runs and still looks right, it just loses the effect.
+# Everything here degrades quietly. If a platform call is missing or refused the app still
+# runs and still looks right, it just loses the effect. The frosted menus are a Windows
+# effect and are simply absent on macOS, where the menu stays opaque.
 
-import ctypes
-from ctypes import wintypes
+import sys
 
 from PyQt6.QtCore import Qt, QRectF
 from PyQt6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap, QFont, QFontDatabase
 from PyQt6.QtWidgets import QProxyStyle, QStyle
 
 from theme import T
+
+IS_MAC = sys.platform == "darwin"
+
+if not IS_MAC:
+    import ctypes
+    from ctypes import wintypes
+else:
+    ctypes = wintypes = None
 
 # Windows 11 ships Segoe Fluent Icons; Windows 10 has the same glyphs in Segoe MDL2 Assets.
 ICON_FONTS = ("Segoe Fluent Icons", "Segoe MDL2 Assets")
@@ -32,6 +40,21 @@ GLYPH = {
     "close": "",     # ChromeClose
 }
 
+# macOS has no Segoe icon font, and those code points are in a private use area, so they
+# would come out as empty boxes. These are ordinary Unicode, present in the system font.
+MAC_GLYPH = {
+    "import": "↓",      # downwards arrow
+    "export": "↑",      # upwards arrow
+    "export_all": "⇈",  # upwards paired arrows
+    "theme": "◐",       # circle with left half black
+    "about": "ⓘ",       # circled latin small letter i
+    "app": "☰",         # trigram for heaven, reads as a list
+    "minimize": "─",    # box drawings light horizontal
+    "maximize": "□",    # white square
+    "restore": "❐",     # upper right drop-shadowed white square
+    "close": "✕",       # multiplication x
+}
+
 _icon_family = None
 
 
@@ -39,20 +62,30 @@ def icon_family():
     """Whichever Windows icon font this PC has, or None when neither is installed."""
     global _icon_family
     if _icon_family is None:
-        families = set(QFontDatabase.families())
-        _icon_family = next((f for f in ICON_FONTS if f in families), "")
+        if IS_MAC:
+            _icon_family = ""  # the Mac glyphs are plain Unicode, drawn in the UI font
+        else:
+            families = set(QFontDatabase.families())
+            _icon_family = next((f for f in ICON_FONTS if f in families), "")
     return _icon_family or None
 
 
+def glyph_for(name):
+    """The character to draw for a named icon, in this platform's icon vocabulary."""
+    table = MAC_GLYPH if IS_MAC or not icon_family() else GLYPH
+    return table.get(name, GLYPH.get(name, name))
+
+
 def icon_font(px):
-    f = QFont(icon_family() or "Segoe UI")
+    family = icon_family() or ("SF Pro Text" if IS_MAC else "Segoe UI")
+    f = QFont(family)
     f.setPixelSize(px)
     return f
 
 
 def glyph_icon(name, px=16, colour=None):
-    """A menu icon drawn from the Windows icon font, in the theme's own colour."""
-    char = GLYPH.get(name, name)
+    """A menu icon drawn as a glyph, in the theme's own colour."""
+    char = glyph_for(name)
     size = px * 2  # drawn at 2x so it stays sharp on a scaled display
     pix = QPixmap(size, size)
     pix.fill(Qt.GlobalColor.transparent)
@@ -152,6 +185,8 @@ DWMWCP_ROUNDSMALL = 3
 
 
 def _hwnd(widget):
+    if IS_MAC:
+        return None
     try:
         return wintypes.HWND(int(widget.winId()))
     except Exception:
@@ -199,6 +234,10 @@ def frost_menu(menu, opacity=0.26):
     that check a PC that refuses the effect would get a transparent menu over bare desktop,
     which is worse than the plain one it started with.
     """
+    if IS_MAC:
+        # macOS draws its own menu shadow and rounding. Stripping those to fake a frost we
+        # cannot produce here would leave the menu looking worse than the plain one.
+        return False
     menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
     menu.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
     menu.setWindowFlag(Qt.WindowType.NoDropShadowWindowHint, True)
@@ -246,4 +285,4 @@ if __name__ == "__main__":
     menu = QMenu()
     menu.addAction(glyph_icon("theme"), "Theme")
     frost_menu(menu)  # must not raise, whatever Windows makes of it
-    print(f"win_chrome OK — icon font: {icon_family() or 'none installed'}")
+    print(f"chrome OK — icon font: {icon_family() or 'none installed'}")

@@ -8,6 +8,9 @@
 # arguments for free — which resolving it down to the bare .exe would throw away.
 
 import os
+import sys
+
+IS_MAC = sys.platform == "darwin"
 
 # Folders Windows itself hides from the Start Menu, or that hold uninstallers and readmes.
 SKIP_WORDS = ("uninstall", "uninstaller", "readme", "release notes", "help", "documentation",
@@ -29,7 +32,14 @@ def _wanted(name):
 
 
 def scan(roots=None):
-    """[(display name, path to launch)] for everything on the Start Menu, sorted by name."""
+    """[(display name, path to launch)] for the programs on this PC, sorted by name.
+
+    macOS keeps applications as .app bundles in a handful of known folders rather than as
+    shortcuts, so that platform scans those instead.
+    """
+    if IS_MAC:
+        from macos_system import scan_apps
+        return scan_apps(roots)
     found = {}
     for root in (roots if roots is not None else START_MENUS):
         if not root or not os.path.isdir(root):

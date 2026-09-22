@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# winput.py
+# _input_win.py
 # Sends keystrokes and mouse wheel events through Win32 SendInput.
 #
 # Why not pynput: on Windows it sends printable characters as Unicode text events
@@ -77,25 +77,34 @@ def _key_event(vk, keyup):
                   union=_INPUTUNION(ki=_KEYBDINPUT(wVk=vk, wScan=scan, dwFlags=flags)))
 
 
-last_error = ""  # why the most recent send failed, for the Activity log
+_last_error = ""
+
+
+def last_error():
+    """Why the most recent send failed, for the Activity log.
+
+    A function rather than a module variable so userinput.py can re-export it: a plain
+    global would be bound once at import and never see a later failure.
+    """
+    return _last_error
 
 
 def _send(events):
-    global last_error
+    global _last_error
     if not events:
         return False
     array = (_INPUT * len(events))(*events)
     sent = user32.SendInput(len(events), array, ctypes.sizeof(_INPUT))
     if sent == len(events):
-        last_error = ""
+        _last_error = ""
         return True
     code = ctypes.get_last_error() if hasattr(ctypes, "get_last_error") else 0
     if code == 5:  # ERROR_ACCESS_DENIED
-        last_error = ("Windows blocked the keystroke. The app in front is running as "
-                      "administrator, so Spinin has to be started as administrator too.")
+        _last_error = ("Windows blocked the keystroke. The app in front is running as "
+                       "administrator, so Spinin has to be started as administrator too.")
     else:
-        last_error = f"Windows rejected the keystroke (error {code})."
-    print(last_error)
+        _last_error = f"Windows rejected the keystroke (error {code})."
+    print(_last_error)
     return False
 
 

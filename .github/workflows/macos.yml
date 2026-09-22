@@ -1,0 +1,92 @@
+name: macOS build
+
+# The macOS port cannot be tested on the Windows machine it was written on, so this is the
+# only thing standing between it and bit rot. It runs on every push that touches the source,
+# and builds the .app so packaging problems surface immediately rather than at release time.
+#
+# What it proves: everything imports on macOS, the platform backends resolve, the whole UI
+# constructs offscreen, and the bundle builds.
+# What it cannot prove: that a keystroke actually lands in another app, that the Accessibility
+# permission flow works, or that the sound-device switching does anything. Those need a real
+# Mac with a real session — see docs/MACOS.md.
+
+on:
+  push:
+    branches: [main]
+    paths: ["**.py", "**.spec", "requirements*.txt", ".github/workflows/macos.yml"]
+  pull_request:
+    paths: ["**.py", "**.spec", "requirements*.txt"]
+  workflow_dispatch:
+
+jobs:
+  macos:
+    runs-on: macos-14      # Apple Silicon
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+          python -c "import Quartz, AppKit; print('pyobjc present')"
+
+      - name: No unguarded platform imports
+        run: python check_portable.py
+
+      - name: Module self-checks
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          set -e
+          for module in branding action_spec actions actions_mac _input_mac userinput \
+                        macos_system audio_devices app_scanner dj_guard theme controls \
+                        config_manager midi_listener profile_io chrome; do
+            echo "--- $module"
+            python "$module.py"
+          done
+
+      - name: Build the whole app offscreen
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python smoke_test.py
+
+      - name: Make the icon
+        # .icns is assembled from the PNG with Apple's own tools, so no binary icon file
+        # needs to be committed for a platform the author cannot build on.
+        run: |
+          set -e
+          mkdir -p Spinin2.iconset
+          for size in 16 32 64 128 256 512; do
+            sips -z $size $size Spinin2.png --out "Spinin2.iconset/icon_${size}x${size}.png"
+            sips -z $((size*2)) $((size*2)) Spinin2.png \
+                 --out "Spinin2.iconset/icon_${size}x${size}@2x.png"
+          done
+          iconutil -c icns Spinin2.iconset -o Spinin2.icns
+          ls -la Spinin2.icns
+
+      - name: Build the .app
+        run: pyinstaller --noconfirm Spinin-mac.spec
+
+      - name: Check the bundle looks like an app
+        run: |
+          set -e
+          test -d "dist/Spinin.app" || { echo "no .app produced"; exit 1; }
+          test -x "dist/Spinin.app/Contents/MacOS/Spinin" || { echo "no executable"; exit 1; }
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" \
+              "dist/Spinin.app/Contents/Info.plist" | grep -q "org.spinin.Spinin"
+          echo "bundle OK: $(du -sh dist/Spinin.app | cut -f1)"
+
+      - name: Package it
+        run: |
+          cd dist
+          zip -qry Spinin-macos.zip Spinin.app
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Spinin-macos-unsigned
+          path: dist/Spinin-macos.zip
+          retention-days: 14

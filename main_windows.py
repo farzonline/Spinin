@@ -38,8 +38,8 @@ import app_scanner
 import audio_devices
 import branding
 import profile_io
-import win_chrome
-import winput
+import chrome
+import userinput
 from action_handler import LEGACY_SYSTEM as LEGACY_SYSTEM_IDS
 from branding import APP_NAME, APP_VERSION
 from config_manager import ConfigManager
@@ -54,6 +54,7 @@ from context_tracker import ActiveWindowTracker
 from action_handler import ActionHandler
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+IS_MAC = sys.platform == "darwin"
 
 LED_MODES = [
     ("on_press", "Light while held"),
@@ -396,7 +397,7 @@ class KeyCaptureLineEdit(QLineEdit):
     Windows claims Win-key combos (Win+V for clipboard history, Win+Tab, Win+L, ...) as shell
     hotkeys and acts on them before a focused window's key events fire at all, so a box built
     on ordinary Qt events could only ever see what the shell didn't already want — in practice,
-    a hard ceiling around two keys. The hook in winput.HotkeyCapture sees every key system-wide
+    a hard ceiling around two keys. The hook in userinput.HotkeyCapture sees every key system-wide
     first and blocks the shell's own handling for as long as this box has focus.
     """
 
@@ -406,7 +407,7 @@ class KeyCaptureLineEdit(QLineEdit):
         self.setReadOnly(True)
         self.setProperty("capture", True)
         self.captured_keys = []
-        self._capture = winput.HotkeyCapture(self._on_keys)
+        self._capture = userinput.HotkeyCapture(self._on_keys)
 
     def set_keys(self, keys):
         self.captured_keys = list(keys)
@@ -732,11 +733,14 @@ class AboutDialog(QDialog):
 
 
 class TitleBar(QFrame):
-    """The app's own top bar, in place of the one Windows would draw.
+    """The app's own top bar, in place of the one the system would draw.
 
-    Dragging and resizing are handed to Windows through startSystemMove/startSystemResize
-    rather than moved by hand, so snapping to an edge, the shake gesture and multi-monitor
-    DPI all keep working exactly as they do for any other window.
+    Dragging and resizing are handed to the window manager through startSystemMove and
+    startSystemResize rather than moved by hand, so snapping to an edge, the shake gesture
+    and multi-monitor DPI all keep working exactly as they do for any other window.
+
+    The buttons sit where each platform puts them: right and minimise-first on Windows,
+    left and close-first on macOS, because putting them anywhere else reads as broken.
     """
 
     DRAG_SLOP = 6  # pixels of movement before a press counts as a drag, not a click
@@ -749,34 +753,52 @@ class TitleBar(QFrame):
         self._press = None
 
         lay = QHBoxLayout(self)
-        lay.setContentsMargins(16, 5, 6, 0)
         lay.setSpacing(9)
-        self.crest = QLabel()
-        self.crest.setPixmap(icon.pixmap(18, 18))
-        lay.addWidget(self.crest)
-        lay.addWidget(label(APP_NAME, "wordmark"))
-        lay.addWidget(label(APP_VERSION, "muted"))
-        lay.addStretch()
+
+        order = (("close", "Close", window.close),
+                 ("minimize", "Minimise", window.showMinimized),
+                 ("maximize", "Zoom", self.toggle_max)) if IS_MAC else (
+                ("minimize", "Minimise to the tray", window.showMinimized),
+                ("maximize", "Maximise", self.toggle_max),
+                ("close", "Close", window.close))
 
         self.buttons = {}
-        for key, tip, slot in (("minimize", "Minimise to the tray", window.showMinimized),
-                               ("maximize", "Maximise", self.toggle_max),
-                               ("close", "Close", window.close)):
+        for key, tip, slot in order:
             b = button("", "chrome")
             b.setToolTip(tip)
             b.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             b.clicked.connect(slot)
             if key == "close":
                 b.setProperty("danger", "true")
-            lay.addWidget(b)
             self.buttons[key] = b
+
+        self.crest = QLabel()
+        self.crest.setPixmap(icon.pixmap(18, 18))
+        wordmark = label(APP_NAME, "wordmark")
+        version = label(APP_VERSION, "muted")
+
+        if IS_MAC:
+            lay.setContentsMargins(10, 5, 16, 0)
+            for key, _, _ in order:
+                lay.addWidget(self.buttons[key])
+            lay.addSpacing(8)
+            for widget in (self.crest, wordmark, version):
+                lay.addWidget(widget)
+            lay.addStretch()
+        else:
+            lay.setContentsMargins(16, 5, 6, 0)
+            for widget in (self.crest, wordmark, version):
+                lay.addWidget(widget)
+            lay.addStretch()
+            for key, _, _ in order:
+                lay.addWidget(self.buttons[key])
         self.restyle()
 
     def restyle(self):
         """Redraws the three glyphs, after a theme change or a maximise."""
         for key, b in self.buttons.items():
             shown = "restore" if key == "maximize" and self.win.isMaximized() else key
-            b.setIcon(win_chrome.glyph_icon(shown, 11, T["muted"]))
+            b.setIcon(chrome.glyph_icon(shown, 11, T["muted"]))
             b.setIconSize(QSize(11, 11))
         self.buttons["maximize"].setToolTip("Restore" if self.win.isMaximized() else "Maximise")
 
@@ -1013,7 +1035,7 @@ class MidiMapperApp(QWidget):
         more_btn = button("⋯")
         more_btn.setToolTip("Import, export, appearance and about")
         more = QMenu(self)
-        glyph = win_chrome.glyph_icon
+        glyph = chrome.glyph_icon
         # Icons are drawn in the theme's own ink, so set_theme has to redraw them: each one
         # is kept here with the glyph it was made from.
         self.menu_icons = []
@@ -1043,8 +1065,8 @@ class MidiMapperApp(QWidget):
         self.more_menu = more
         # Frosting has to wait for the menu to be about to show: Windows only takes the
         # effect once the native window exists, which it does not until then.
-        more.aboutToShow.connect(lambda: win_chrome.frost_menu(more))
-        theme_menu.aboutToShow.connect(lambda: win_chrome.frost_menu(theme_menu))
+        more.aboutToShow.connect(lambda: chrome.frost_menu(more))
+        theme_menu.aboutToShow.connect(lambda: chrome.frost_menu(theme_menu))
         more_btn.setMenu(more)
         h.addWidget(more_btn)
         return h
@@ -1060,7 +1082,7 @@ class MidiMapperApp(QWidget):
         self.mapped_legend.setText(f"<span style='color:{T['legend']}'>●</span>&nbsp; Has an action")
         self.live_legend.setText(f"<span style='color:{T['pad']}'>●</span>&nbsp; Live input")
         for act, glyph_name in self.menu_icons:
-            act.setIcon(win_chrome.glyph_icon(glyph_name))
+            act.setIcon(chrome.glyph_icon(glyph_name))
         self.title_bar.restyle()
         self.restyle_status()
         self.update_context_bar()
@@ -1174,7 +1196,7 @@ class MidiMapperApp(QWidget):
         self.app_path_input = QLineEdit()
         self.app_path_input.setPlaceholderText("notepad, or a path to an .exe")
         pick_installed = button("Installed…")
-        pick_installed.setIcon(win_chrome.glyph_icon("app", 14, T["muted"]))
+        pick_installed.setIcon(chrome.glyph_icon("app", 14, T["muted"]))
         pick_installed.setToolTip("Pick from the programs installed on this PC")
         pick_installed.clicked.connect(self.on_pick_installed_app)
         browse = button("Browse…")
@@ -2197,7 +2219,7 @@ def main():
     app.setApplicationVersion(APP_VERSION)
     app.setOrganizationName(APP_NAME)
     # Drawing the tick marks by hand is why this wraps Fusion rather than using it directly.
-    app.setStyle(win_chrome.SpininStyle("Fusion"))
+    app.setStyle(chrome.SpininStyle("Fusion"))
     app.setQuitOnLastWindowClosed(False)  # hiding to the tray must not quit
     window = MidiMapperApp()  # reads the saved theme before the stylesheet is built
     app.setWindowIcon(window.app_icon())

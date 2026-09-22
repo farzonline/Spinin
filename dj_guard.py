@@ -5,6 +5,12 @@
 # Windows hands a MIDI input port to one process at a time. While Spinin holds the DDJ-FLX4,
 # rekordbox or Serato cannot open it at all — so "pause" has to mean closing the port, not
 # just ignoring what comes through it.
+#
+# macOS is the opposite: CoreMIDI lets several apps read the same port. Spinin still stands
+# down there, because two programs both acting on one jog wheel is its own kind of mess —
+# you would be scratching a record and scrolling a web page at the same time.
+
+import sys
 
 import psutil
 from PyQt6.QtCore import QObject, pyqtSignal, QTimer
@@ -27,6 +33,27 @@ DJ_APPS = {
     "enginedj.exe": "Engine DJ",
     "djuced.exe": "DJUCED",
 }
+
+# macOS process names carry no .exe and are usually the bundle's display name. CoreMIDI lets
+# several apps share a port, so standing down is a courtesy here rather than a necessity —
+# but two programs both acting on the same jog wheel is still nobody's idea of a good time.
+MAC_DJ_APPS = {
+    "rekordbox": "rekordbox",
+    "rekordboxagent": "rekordbox",
+    "serato dj pro": "Serato DJ Pro",
+    "serato dj lite": "Serato DJ Lite",
+    "traktor": "Traktor Pro",
+    "virtualdj": "VirtualDJ",
+    "djay pro": "djay Pro",
+    "djay": "djay",
+    "mixxx": "Mixxx",
+    "engine dj": "Engine DJ",
+    "djuced": "DJUCED",
+    "ableton live": "Ableton Live",
+}
+
+if sys.platform == "darwin":
+    DJ_APPS = MAC_DJ_APPS
 
 
 def running_dj_app(extra=()):
