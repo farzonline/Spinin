@@ -1,11 +1,29 @@
 # The macOS port
 
-**Status: not yet run on a Mac.** Everything here was written on a Windows machine and is
-validated only as far as a CI runner can validate it. It builds, it imports, the whole UI
-constructs — but no keystroke it sends has ever landed in a real application.
+**Status: builds and runs headless on macOS; never used interactively.** Written on a
+Windows machine, then run on Apple's macOS 14 runners (Apple Silicon) through the
+`macOS build` workflow, which passes.
+
+**Proven on real macOS by CI:**
+
+- Every module imports, pyobjc (Quartz, AppKit) loads, and `check_portable.py` passes
+- The whole UI constructs offscreen: the window, every dialog, all six themes, and the
+  editor for each of the 138 Mac actions (`smoke_test.py`)
+- **CoreAudio device enumeration works**: lists the runner's output devices, reads the
+  default, and switches the default successfully. This was written blind in ctypes and was
+  the part most likely to be wrong; it is not.
+- The app scanner finds real `.app` bundles with the right names
+- The Mac catalog's key names all resolve to key codes
+- The `.app` bundle builds, carries the right bundle id, and gets an `.icns` made from the
+  PNG
+
+**Not proven, because CI has no display, keyboard, speakers or controller:** that a
+keystroke actually lands in another app, that the permission prompts work, that volume
+changes anything audible, and that the DDJ-FLX4 is found over CoreMIDI.
 
 Do not ship a macOS release until the checklist at the bottom has been worked through on
-real hardware.
+real hardware. An unsigned build of each passing commit is kept for 14 days as a workflow
+artifact (`Spinin-macos-unsigned`) if you want something to try.
 
 ## How the platform split works
 
@@ -99,15 +117,25 @@ In rough order of how much I would bet against them:
 
 1. **The `NSSystemDefined` media-key path** — fiddly, and the constants are folklore more
    than documentation.
-2. **CoreAudio device enumeration** — ~150 lines of ctypes against a C API, written blind.
-   It degrades to an empty device list rather than crashing, so the symptom will be "no
-   devices" rather than a traceback.
-3. **`CGEventTap` lifetime** — it is attached to `CFRunLoopGetCurrent()`, which assumes Qt's
+2. **`CGEventTap` lifetime** — it is attached to `CFRunLoopGetCurrent()`, which assumes Qt's
    event loop is running that run loop on the main thread. Probably right, unverified.
+3. **CoreAudio volume** — device listing and switching are now proven by CI, but setting the
+   volume level uses a different property (`vmvc`, falling back to per-channel `volm`) that
+   CI never exercises. Check the fader actually moves the output level.
 4. **The Sequoia tiling shortcuts** (`mac.tileleft` and friends) — these are version
    specific and will simply do nothing on older macOS.
 5. **System Settings pane URLs** — Ventura renamed the panes; the old
    `x-apple.systempreferences:` URLs mostly still redirect, but some may not.
+
+## Bugs the macOS CI has already caught
+
+Worth knowing, because each would have shipped otherwise:
+
+- `chrome.py` nulled out `ctypes` on macOS, but defines structures from it at import time —
+  the app would have crashed on launch.
+- `dj_guard.py` appended `.exe` to every process name, so it could never have recognised
+  rekordbox on a Mac and would never have stood down.
+- Two self-checks used Windows-only fixtures and failed for the wrong reason on macOS.
 
 ## Building it
 

@@ -123,15 +123,18 @@ Uninstalling leaves your settings alone, so reinstalling does not lose your work
 
 ## macOS
 
-**Not ready yet.** There is a macOS port in the tree — the platform split is done, the
-Quartz and CoreAudio backends are written, there is a 138-action Mac catalog, and CI builds
-a `.app` on every push. But **it has never been run on a Mac**, so nothing about it is
-proven beyond "it imports and the window constructs".
+[![macOS build](https://github.com/farzonline/Spinin/actions/workflows/macos.yml/badge.svg)](https://github.com/farzonline/Spinin/actions/workflows/macos.yml)
+
+**Not ready yet.** A macOS port is in the tree: the Quartz and CoreAudio backends, a
+138-action Mac catalog, and a CI job that builds a `.app` on every push. On Apple's macOS
+runners the whole app builds and runs headless, and sound-device switching works. But
+**nobody has used it on a Mac yet**. CI has no keyboard, display or controller, so it can't
+show that a keystroke actually reaches another app.
 
 There is no macOS download, and there won't be one until it has been tested on real
-hardware. If you have a Mac and a DDJ-FLX4 and fancy being the first person to try it, the
-checklist and the known-shaky parts are in **[docs/MACOS.md](docs/MACOS.md)** — issues and
-pull requests very welcome.
+hardware. If you have a Mac and a DDJ-FLX4 and want to be the first person to try it, the
+checklist and the parts most likely to break are in **[docs/MACOS.md](docs/MACOS.md)**.
+Issues and pull requests are welcome.
 
 ## Building a release
 
