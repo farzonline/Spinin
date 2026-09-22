@@ -8,7 +8,7 @@ import sys
 
 APP_NAME = "Spinin"
 APP_VERSION = "0.1.0"
-APP_TAGLINE = "Your DJ controller, everywhere else."
+APP_TAGLINE = "Expand the power of your controller."
 APP_URL = "https://github.com/farzonline/Spinin"
 APP_AUTHOR = "farzonline"
 APP_LICENSE = "GPL-3.0-or-later"
