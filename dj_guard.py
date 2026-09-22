@@ -56,6 +56,21 @@ if sys.platform == "darwin":
     DJ_APPS = MAC_DJ_APPS
 
 
+def process_name(name):
+    """A process name as this platform reports it.
+
+    Windows process names carry the .exe; macOS ones do not. Normalising both ways means a
+    name written for either platform still resolves, which matters because `extra_dj_apps`
+    travels inside a profile someone may have written on the other one.
+    """
+    name = str(name).strip().lower()
+    if not name:
+        return ""
+    if sys.platform == "darwin":
+        return name.removesuffix(".exe")
+    return name if name.endswith(".exe") else name + ".exe"
+
+
 def running_dj_app(extra=()):
     """The name of the first DJ application found running, or None.
 
@@ -63,9 +78,9 @@ def running_dj_app(extra=()):
     """
     wanted = dict(DJ_APPS)
     for name in extra:
-        name = str(name).strip().lower()
-        if name:
-            wanted.setdefault(name if name.endswith(".exe") else name + ".exe", name)
+        key = process_name(name)
+        if key:
+            wanted.setdefault(key, str(name).strip())
     for proc in psutil.process_iter(["name"]):
         try:
             name = (proc.info["name"] or "").lower()
@@ -105,11 +120,21 @@ class DjSoftwareWatcher(QObject):
 
 
 if __name__ == "__main__":
-    import os
-    me = os.path.basename(__import__("sys").executable).lower()
+    # Asks psutil what it calls this very process, rather than guessing from
+    # sys.executable: on macOS the two disagree (a "python" symlink reporting as
+    # "python3.13"), which is exactly the sort of thing this check exists to catch.
+    me = psutil.Process().name().lower()
     assert running_dj_app([me]) is not None, "a name passed in must be found among live processes"
     assert running_dj_app(["definitely-not-running-xyz"]) is None
     assert running_dj_app([me.removesuffix(".exe")]) is not None, ".exe should be optional"
+
+    # A name written on the other platform still resolves.
+    if sys.platform == "darwin":
+        assert process_name("rekordbox.exe") == "rekordbox"
+        assert process_name("Mixxx") == "mixxx"
+    else:
+        assert process_name("rekordbox") == "rekordbox.exe"
+        assert process_name("Mixxx.exe") == "mixxx.exe"
 
     seen = []
     w = DjSoftwareWatcher.__new__(DjSoftwareWatcher)
