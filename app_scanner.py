@@ -101,15 +101,14 @@ def resolve(name):
         return None
     if os.path.exists(name):
         return name
-    if IS_MAC:
-        return name  # `open -a` does its own name lookup, and does it better
     import shutil
-    found = shutil.which(name) or shutil.which(f"{name}.exe")
+    found = shutil.which(name) or (None if IS_MAC else shutil.which(f"{name}.exe"))
     if found:
         return found
-    found = _app_paths_entry(name)
-    if found and os.path.exists(found):
-        return found
+    if not IS_MAC:
+        found = _app_paths_entry(name)
+        if found and os.path.exists(found):
+            return found
     wanted = name.casefold()
     shortcuts = installed()
     for label, path in shortcuts:
