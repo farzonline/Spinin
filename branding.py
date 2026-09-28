@@ -7,7 +7,7 @@ import os
 import sys
 
 APP_NAME = "Spinin"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.1.1"
 APP_TAGLINE = "Expand the power of your controller."
 APP_URL = "https://github.com/farzonline/Spinin"
 APP_AUTHOR = "farzonline"

@@ -12,10 +12,12 @@ python-rtmidi>=1.5
 psutil>=5.9
 
 # Windows backend
+# AppOpener was here and was removed deliberately: it rebuilt a cache inside its own
+# package folder when imported, so an installed copy under Program Files crashed on every
+# non-elevated launch. app_scanner.resolve() does the same job without writing anything.
 pywin32>=306; sys_platform == "win32"
 pycaw>=20240210; sys_platform == "win32"
 comtypes>=1.2; sys_platform == "win32"
-AppOpener>=1.7; sys_platform == "win32"
 
 # macOS backend. Quartz carries the event services used to send keystrokes and to watch for
 # a shortcut being recorded; Cocoa carries NSWorkspace, which is how the app in front is

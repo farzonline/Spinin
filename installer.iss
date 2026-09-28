@@ -66,8 +66,12 @@ Name: "{autodesktop}\{#AppName}";    Filename: "{app}\{#AppExe}"; Tasks: desktop
 Name: "{userstartup}\{#AppName}";    Filename: "{app}\{#AppExe}"; Tasks: startup
 
 [Run]
+; runasoriginaluser matters: without it an all-users install launches Spinin with the
+; installer's administrator rights, so that one run behaves differently from every later
+; one. A fault that only appears for an ordinary user then looks like it appears at random,
+; days later, instead of immediately.
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; \
-    Flags: nowait postinstall skipifsilent
+    Flags: nowait postinstall skipifsilent runasoriginaluser
 
 [UninstallDelete]
 ; The build's own leftovers only. Settings in {userappdata}\Spinin are deliberately kept,

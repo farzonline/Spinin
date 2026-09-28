@@ -48,8 +48,9 @@ controller to it, then takes it back when you close it. You never have to think 
 
 **[Download the latest installer →](https://github.com/farzonline/Spinin/releases/latest)**
 
-Run `Spinin-0.1.0-Setup.exe`. It installs for the current user, so there is no
-administrator prompt, and it offers to start with Windows.
+Run the setup file. By default it installs just for you, so there is no administrator
+prompt, and it offers to start with Windows. You can choose an all-users install instead if
+you would rather; both work the same.
 
 <details>
 <summary>Or run it from source</summary>

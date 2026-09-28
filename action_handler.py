@@ -9,6 +9,7 @@ import threading
 import time
 
 import actions as catalog
+import app_scanner
 import audio_devices
 import userinput
 
@@ -17,12 +18,10 @@ IS_MAC = sys.platform == "darwin"
 if IS_MAC:
     import macos_system
     AudioUtilities = None
-    open_app = None
     # macOS reads Ctrl+scroll as the accessibility screen zoom, so an app's own zoom is
     # Cmd+scroll there. Windows uses Ctrl for both.
     ZOOM_MODIFIER = "cmd"
 else:
-    from AppOpener import open as open_app
     from pycaw.pycaw import AudioUtilities
     macos_system = None
     ZOOM_MODIFIER = "ctrl"
@@ -212,7 +211,8 @@ class ActionHandler:
 
     @staticmethod
     def _background(fn, *args):
-        # AppOpener scans installed apps and Explorer can be slow; never block the UI thread.
+        # Resolving a name walks the Start Menu, and Explorer can be slow to start an app;
+        # never block the UI thread with either.
         threading.Thread(target=fn, args=args, daemon=True).start()
         return True
 
@@ -249,17 +249,19 @@ class ActionHandler:
                 if IS_MAC:
                     # `open` handles both a path to an .app bundle and a plain app name.
                     macos_system.launch(name)
-                elif os.path.exists(name):
-                    # Covers the Start Menu shortcuts the app list offers: opening the .lnk
-                    # keeps the working directory and arguments the installer put in it,
-                    # which resolving it down to the bare .exe would throw away.
-                    os.startfile(name)
-                elif any(c in name for c in "\\/ "):
-                    subprocess.Popen(name, shell=True)
-                else:
-                    open_app(name, match_closest=True)
+                    return
+                # Deliberately no shell: the name can come from an imported profile, and
+                # "Open an app" must not be a way to run arbitrary commands.
+                target = app_scanner.resolve(name)
+                if not target:
+                    self.report(f"Couldn't find an app called “{name}”. Pick it with "
+                                "Installed… or Browse… instead.")
+                    return
+                # A Start Menu shortcut keeps the working directory and arguments the
+                # installer put in it, which resolving down to the bare .exe would lose.
+                os.startfile(target)
             except Exception as e:
-                print(f"Error launching {name}: {e}")
+                self.report(f"Couldn't open “{name}”: {e}")
         return self._background(run)
 
     def sleep_pc(self):

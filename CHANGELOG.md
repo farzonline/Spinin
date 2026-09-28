@@ -4,6 +4,25 @@ All notable changes to Spinin are recorded here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-09-28
+
+### Fixed
+- **Spinin would not start when installed for all users.** Every ordinary launch — including
+  at sign-in — died with `PermissionError: 'C:\Program Files\Spinin\Data\app_names_temp.json'`
+  before the window appeared. The AppOpener library rebuilt a cache inside its own folder
+  when imported, which nobody can write to under Program Files. It only seemed to work at
+  first because the installer's own "launch now" inherited administrator rights.
+
+  AppOpener is gone. "Open an app" now finds programs the way the Run box does: a real path,
+  then PATH, then the App Paths registry, then the Start Menu list Spinin already scans.
+  Nothing is written, and no shell is involved — so an imported profile cannot smuggle a
+  command in through an app name.
+- The installer's "launch now" tick runs Spinin as you rather than as administrator, so an
+  all-users install behaves on its first run exactly as it will on every later one.
+
+### Changed
+- One fewer dependency: `AppOpener` is no longer required.
+
 ## [0.1.0] — 2026-09-20
 
 First public release, under the name Spinin.
@@ -43,4 +62,5 @@ First public release, under the name Spinin.
 - The retired duplicate "Lock PC" action is re-pointed to the working one on load, so a
   button mapped to it keeps working instead of going quiet.
 
+[0.1.1]: https://github.com/farzonline/Spinin/releases/tag/v0.1.1
 [0.1.0]: https://github.com/farzonline/Spinin/releases/tag/v0.1.0

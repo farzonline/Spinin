@@ -64,6 +64,63 @@ def installed(refresh=False):
     return _cache
 
 
+def _app_paths_entry(name):
+    """What the Run box would open for this name, from the App Paths registry.
+
+    Windows keeps a key here for programs that want to be launchable by name without being
+    on PATH, which is how "chrome" and "spotify" work in Run.
+    """
+    import winreg
+    for root in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+        for key_name in (name, f"{name}.exe"):
+            try:
+                with winreg.OpenKey(
+                        root, rf"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\{key_name}"
+                ) as key:
+                    value = winreg.QueryValueEx(key, "")[0]
+            except OSError:
+                continue
+            if value:
+                return value.strip('"')
+    return None
+
+
+def resolve(name):
+    """A path to open for `name`, or None if nothing on this PC matches.
+
+    Replaces what AppOpener used to do. AppOpener could not be kept: it rebuilt a cache
+    inside its own package folder at import time, so once Spinin was installed under
+    Program Files every ordinary launch died with a PermissionError before the window
+    ever appeared.
+
+    Looks where a person would expect, in order: an actual path, then PATH, then the App
+    Paths registry, then the Start Menu by name.
+    """
+    name = (name or "").strip().strip('"')
+    if not name:
+        return None
+    if os.path.exists(name):
+        return name
+    if IS_MAC:
+        return name  # `open -a` does its own name lookup, and does it better
+    import shutil
+    found = shutil.which(name) or shutil.which(f"{name}.exe")
+    if found:
+        return found
+    found = _app_paths_entry(name)
+    if found and os.path.exists(found):
+        return found
+    wanted = name.casefold()
+    shortcuts = installed()
+    for label, path in shortcuts:
+        if label.casefold() == wanted:
+            return path
+    for label, path in shortcuts:  # "spotify" should still find "Spotify Premium"
+        if wanted in label.casefold():
+            return path
+    return None
+
+
 if __name__ == "__main__":
     import tempfile
 
@@ -88,6 +145,25 @@ if __name__ == "__main__":
 
     real = installed()
     assert real is installed(), "second call must come from the cache"
+
+    # resolve() replaced AppOpener, so it has to handle what AppOpener handled.
+    assert resolve("") is None and resolve(None) is None
+    assert resolve("definitely-not-an-app-xyz") is None, "an unknown name resolves to nothing"
+    here = os.path.abspath(__file__)
+    assert resolve(here) == here, "an existing path is used as it stands"
+    assert resolve(f'"{here}"') == here, "a quoted path still resolves"
+    if not IS_MAC:
+        # notepad is on PATH on every Windows install, so this proves the PATH step.
+        found = resolve("notepad")
+        assert found and found.lower().endswith("notepad.exe"), found
+        # Compared case-insensitively: which() echoes back the spelling it was given, and
+        # Windows paths do not care either way.
+        assert resolve("NOTEPAD").lower() == found.lower(), "matching must not care about case"
+        if real:
+            by_name = resolve(real[0][0])
+            assert by_name, f"a Start Menu entry should resolve: {real[0][0]}"
+    # Nothing here may run a shell, so a name with shell characters is just a name.
+    assert resolve("foo & echo pwned") is None, "must not treat a name as a command"
     print(f"app_scanner OK — {len(real)} programs found on this PC")
     for name, path in real[:5]:
         print(f"   {name}  ->  {os.path.basename(path)}")

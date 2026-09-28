@@ -42,7 +42,7 @@ a = Analysis(
               "PyQt6.Qt3DCore", "PyQt6.QtCharts", "PyQt6.QtDataVisualization",
               # The Windows backend and its dependencies have no business in a Mac build.
               "win32gui", "win32process", "win32api", "win32con",
-              "pycaw", "comtypes", "AppOpener", "_input_win", "_audio_win"],
+              "pycaw", "comtypes", "_input_win", "_audio_win"],
     cipher=block_cipher,
     noarchive=False,
 )
